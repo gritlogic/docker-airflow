@@ -39,15 +39,20 @@ RUN set -ex \
     && apt-get install -yqq --no-install-recommends \
         $buildDeps \
         python-pip \
+        git-core \
         apt-utils \
         curl \
         netcat \
         locales \
+        libxml2 \
+        libxslt1-dev \
+        freetds-dev \
     && apt-get install -yqq -t jessie-backports python-requests libpq-dev \
     && sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
     && locale-gen \
     && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
     && useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow \
+    && pip install lxml \
     && pip install Cython \
     && pip install pytz==2015.7 \
     && pip install cryptography \
@@ -57,7 +62,7 @@ RUN set -ex \
     && pip install psycopg2 \
     && pip install pandas==0.18.1 \
     && pip install celery==3.1.23 \
-    && pip install airflow[celery,postgres,hive,hdfs,jdbc]==$AIRFLOW_VERSION \
+    && pip install "git+https://github.com/apache/incubator-airflow.git@v1-8-test#egg=airflow[mssql, celery]" \
     && apt-get remove --purge -yqq $buildDeps libpq-dev \
     && apt-get clean \
     && rm -rf \
